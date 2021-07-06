@@ -6,6 +6,17 @@ const { receiveMessage } = getModule(["receiveMessage"], false);
 const { sendMessage } = getModule(["sendMessage"], false);
 
 module.exports = class MemeGenerator extends Plugin {
+  FakeCommand(value) {
+    return {
+      commands: [
+        {
+          command: value,
+          instruction: true,
+        },
+      ],
+    };
+  }
+
   HowMany(strg, wrd) {
     return strg.split(wrd).length - 1;
   }
@@ -16,7 +27,7 @@ module.exports = class MemeGenerator extends Plugin {
 
   async sendBotMessage(content) {
     const received = createBotMessage(channels.getChannelId(), content);
-    console.log(received)
+    console.log(received);
     received.author.username = "Meme Generator";
     received.author.avatar = "powercord";
     return receiveMessage(received.channel_id, received);
@@ -87,13 +98,18 @@ module.exports = class MemeGenerator extends Plugin {
   }
 
   async startPlugin() {
-    console.log("test");
+    const { FakeCommand, Code } = this;
     powercord.api.commands.registerCommand({
       command: "memegen",
       description: "Generate a meme",
       usage: "{c} <IMG URL> <TOP TEXT|BOTTOM TEXT>",
       executor: async (args) => {
-        this.Code(args);
+        Code(args);
+      },
+      autocomplete: (args) => {
+        if (args.length != 0) {
+            return FakeCommand("<Image URL> <Top text|Bottom text>");
+        }
       },
     });
   }
